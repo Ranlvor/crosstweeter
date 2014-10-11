@@ -1,0 +1,9 @@
+#ifndef DEVZUGANGSDATEN_H
+#define DEVZUGANGSDATEN_H
+
+#define CONSUMERKEY = "abc";
+#define CONSUMERSECRET = "def";
+#define TOKENKEY = "ghi";
+#define TOKENSECRET = "jkl"
+
+#endif // DEVZUGANGSDATEN_H
