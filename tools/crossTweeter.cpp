@@ -29,6 +29,16 @@ QString formatGetString(QString base, QMap<QString, QString> parameters){
     return base;
 }
 
+void checkMySQLError(QSqlQuery& q) {
+    QSqlError e = q.lastError();
+    if(!e.isValid())
+        return;//no error
+    qDebug()<<"got MySQL-Error"<<e.number()<<e.text()<<"/"<<e.databaseText()<<"/"<<e.driverText();
+    qDebug()<<"on query"<<q.lastQuery();
+    qDebug()<<"Terminating Application";
+    QCoreApplication::quit();
+}
+
 crossTweeter::crossTweeter(QObject *parent) :
     QObject(parent),since_id(0), max_id(0), dirty(0), queryInsertMax(), queryInsertQueue()
 {
@@ -71,11 +81,13 @@ void crossTweeter::main() {
 void crossTweeter::initRESTPull(){
     dirty = true;
 
-    QSqlQuery query2("START TRANSACTION");
+    QSqlQuery query2("BEGIN");
+    checkMySQLError(query2);
     query2.finish();
 
     qDebug()<<"preparing REST-Request";
     QSqlQuery query("SELECT MAX( id ) FROM  `maxREST`");
+    checkMySQLError(query);
     if (query.next()) {
         since_id = query.value(0).toLongLong();
     }
@@ -123,12 +135,14 @@ void crossTweeter::pullRequestFinished(QNetworkReply* reply){
     if(!ok) {
         qFatal("An error occurred during parsing, rolling back and terminating");
         QSqlQuery query2("ROLLBACK");
+        checkMySQLError(query2);
         query2.finish();
         QCoreApplication::quit();
     } else {
         if(result.length() < 1){
             qDebug()<<"commiting";
             QSqlQuery query2("COMMIT");
+            checkMySQLError(query2);
             query2.finish();
             qDebug()<<"finished REST";
             doPendingRetweets();
@@ -139,11 +153,13 @@ void crossTweeter::pullRequestFinished(QNetworkReply* reply){
                 qDebug()<<"got ID"<<tweetID;
                 queryInsertMax.bindValue("maxREST", tweetID);
                 queryInsertMax.exec();
+                checkMySQLError(queryInsertMax);
                 queryInsertMax.finish();
 
                 if(checkTweet(tweet)){
                     queryInsertQueue.bindValue("maxREST", tweetID);
                     queryInsertQueue.exec();
+                    checkMySQLError(queryInsertQueue);
                     queryInsertQueue.finish();
                 }
 
@@ -165,23 +181,29 @@ bool crossTweeter::checkTweet(QVariantMap tweet){
 
 void crossTweeter::cleanup(){
     qDebug()<<"starting cleanup";
-    QSqlQuery ("BEGIN TRANSACTION");
+    QSqlQuery query1("BEGIN");
+    checkMySQLError(query1);
 
     QSqlQuery query2("SELECT MAX( id ) FROM  `maxREST`");
+    checkMySQLError(query2);
     if (query2.next()) {
         QSqlQuery query3;
         query3.prepare("DELETE FROM `maxREST` WHERE id < :max");
         query3.bindValue("max", query2.value(0).toLongLong());
         query3.exec();
+        checkMySQLError(query3);
     }
 
-    QSqlQuery ("INSERT INTO toretweet "
+    QSqlQuery query4("INSERT INTO toretweet "
                      "SELECT id FROM queue "
                      "WHERE id NOT IN (SELECT id FROM retweeted)");
+    checkMySQLError(query4);
 
-    QSqlQuery ("DELETE FROM queue");
+    QSqlQuery query5("DELETE FROM queue");
+    checkMySQLError(query5);
 
-    QSqlQuery ("COMMIT");
+    QSqlQuery query6("COMMIT");
+    checkMySQLError(query6);
 
     qDebug()<<"cleanup done";
 }
@@ -256,17 +278,21 @@ void crossTweeter::pushRequestFinished(QNetworkReply* reply){
         QCoreApplication::quit();
     } else {
         qDebug()<<"sucess. Writing to Database";
-        QSqlQuery ("BEGIN TRANSACTION");
+        QSqlQuery q1("BEGIN");
+        checkMySQLError(q1);
 
         queryInsertRetweeted.bindValue("new", retweeting);
         queryInsertRetweeted.exec();
+        checkMySQLError(queryInsertRetweeted);
         queryInsertRetweeted.finish();
 
         queryDelteToRetweet.bindValue("new", retweeting);
         queryDelteToRetweet.exec();
+        checkMySQLError(queryDelteToRetweet);
         queryDelteToRetweet.finish();
 
-        QSqlQuery ("COMMIT");
+        QSqlQuery q2("COMMIT");
+        checkMySQLError(q2);
         qDebug()<<"Database: done";
 
         doOldestPendingRetweet();
@@ -360,6 +386,7 @@ void crossTweeter::pollStream(){
             qDebug()<<"got ID"<<tweetID;
             queryInsertQueue.bindValue("maxREST", tweetID);
             queryInsertQueue.exec();
+            checkMySQLError(queryInsertQueue);
             queryInsertQueue.finish();
         }
     }
