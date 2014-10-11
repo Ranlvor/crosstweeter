@@ -345,22 +345,22 @@ void crossTweeter::initSteam(){
 }
 
 void crossTweeter::pollStream(){
-    qDebug()<<"pollStream()";
     if(dirty){
-        qDebug()<<"poll aborted: dirty";
+        qDebug()<<"pollStream(): poll aborted: dirty";
         return;
     }
     if(!streamConnection->canReadLine()){
-        qDebug()<<"poll aborted: no line";
+        qDebug()<<"pollStream(): poll aborted: no line";
     }
     bool gotTweet = false;
     while (streamConnection->canReadLine()) {
         QByteArray line = streamConnection->readLine();
-        qDebug()<<"Got stream data:"<<line;
         if(line == "\n" || line == "\r" || line == "\r\n") {
-            qDebug()<<"ignored: linebreak only";
+            qDebug()<<"pollStream(): linebreak only ignored";
             break;
         }
+        qDebug()<<"pollStream(): Got stream data:"<<line;
+
 
         bool ok;
         QVariantMap tweet = QtJson::Json::parse(line, ok).toMap();
