@@ -54,7 +54,7 @@ void crossTweeter::main() {
     streamManager = new QNetworkAccessManager(this);
     db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName(MYSQLdATABASEserver);
-    db.setDatabaseName(MYSQLdATABASEnameRT);
+    db.setDatabaseName(MYSQLdATABASEname);
     db.setUserName(MYSQLdATABASEuser);
     db.setPassword(MYSQLdATABASEpassword);
     if (!db.open()){

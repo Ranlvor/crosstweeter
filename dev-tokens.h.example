@@ -6,4 +6,9 @@
 #define TOKENKEY = "ghi";
 #define TOKENSECRET = "jkl"
 
+#define MYSQLdATABASEserver "127.0.0.1"
+#define MYSQLdATABASEuser "whatever"
+#define MYSQLdATABASEpassword "you"
+#define MYSQLdATABASEname "like"
+
 #endif // DEVZUGANGSDATEN_H
