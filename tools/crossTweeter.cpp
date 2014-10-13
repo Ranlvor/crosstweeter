@@ -103,7 +103,7 @@ void crossTweeter::doRESTPullRequest(){
     if(max_id != 0)
         parameters.insert("max_id", QString::number(max_id));
     OAuthRequest oauth(CONSUMERKEY, CONSUMERSECRET, TOKENKEY, TOKENSECRET);
-    parameters.insert("screen_name", TARGET);
+    parameters.insert("user_id", FOLLOWSTRING);
     parameters.insert("trim_user", "true");
 
     oauth.setGetParameters(parameters);
@@ -182,7 +182,7 @@ bool crossTweeter::checkTweet(QVariantMap tweet){
         if(rt_status.contains("user")) {
             QVariantMap user = rt_status["user"].toMap();
             qint64 id = user["id"].toLongLong();
-            if(id == Q_INT64_C(2809152610)){
+            if(id == Q_INT64_C(FOLLOW)){
                 qDebug()<<"rejected because it is a tweet already retweeted from the user we track";
                 return false;
             }
@@ -320,7 +320,7 @@ void crossTweeter::initSteam(){
     OAuthRequest oauth(CONSUMERKEY, CONSUMERSECRET, TOKENKEY, TOKENSECRET);
 
     QMap<QString, QString> parameters;
-    parameters.insert("follow", "2809152610");
+    parameters.insert("follow", FOLLOWSTRING);
     parameters.insert("delimited", "false");
     parameters.insert("stall_warnings", "true");
 

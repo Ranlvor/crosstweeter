@@ -1,6 +1,7 @@
 #ifndef DEVZUGANGSDATEN_H
 #define DEVZUGANGSDATEN_H
 
+//OAuth-Token
 #define CONSUMERKEY = "abc";
 #define CONSUMERSECRET = "def";
 #define TOKENKEY = "ghi";
@@ -10,5 +11,10 @@
 #define MYSQLdATABASEuser "whatever"
 #define MYSQLdATABASEpassword "you"
 #define MYSQLdATABASEname "like"
+
+//the id of the user you want to follow
+#define FOLLOW 1234
+#define FOLLOWSTRING "#FOLLOW"
+
 
 #endif // DEVZUGANGSDATEN_H

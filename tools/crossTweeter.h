@@ -2,7 +2,6 @@
 #ifndef CROSSTWEETER_H
 #define CROSSTWEETER_H
 
-#define TARGET "RanlvorPub"
 #include <QObject>
 #include <QtSql>
 #include <QSslSocket>
