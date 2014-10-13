@@ -175,6 +175,22 @@ bool crossTweeter::checkTweet(QVariantMap tweet){
         qDebug()<<"rejected because first letter @";
         return false;
     }
+
+    if(tweet.contains("retweeted_status")) {
+        qDebug()<<"tweet is RT";
+        QVariantMap rt_status = tweet["retweeted_status"].toMap();
+        if(rt_status.contains("user")) {
+            QVariantMap user = rt_status["user"].toMap();
+            qint64 id = user["id"].toLongLong();
+            if(id == Q_INT64_C(2809152610)){
+                qDebug()<<"rejected because it is a tweet already retweeted from the user we track";
+                return false;
+            }
+        } else {
+            qWarning("retweeted_status without user detected");
+        }
+    }
+
     qDebug()<<"accepted";
     return true;
 }
