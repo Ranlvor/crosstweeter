@@ -16,8 +16,10 @@
 #define FOLLOW 1234
 
 //some helper macros I'm a bit angry at because without them it wouldn't compile
-#define FOLLOWSTRING "#FOLLOW"
-#define INT64HELPER(n) Q_INT64_C(n)
-#define FOLLOWINT64 INT64HELPER(FOLLOW)
+#define STRINGIZE2(s) #s
+#define STRINGIZE(s) STRINGIZE2(s)
+#define FOLLOWSTRING STRINGIZE(FOLLOW)
+#define Q_INT64_C_WRAPPER_WHYDOWENEEDTHISSHIT(n) Q_INT64_C(n)
+#define FOLLOWINT64 Q_INT64_C_WRAPPER_WHYDOWENEEDTHISSHIT(FOLLOW)
 
 #endif // DEVZUGANGSDATEN_H
