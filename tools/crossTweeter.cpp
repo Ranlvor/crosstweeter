@@ -182,7 +182,7 @@ bool crossTweeter::checkTweet(QVariantMap tweet){
         if(rt_status.contains("user")) {
             QVariantMap user = rt_status["user"].toMap();
             qint64 id = user["id"].toLongLong();
-            if(id == Q_INT64_C(FOLLOW)){
+            if(id == FOLLOWINT64){
                 qDebug()<<"rejected because it is a tweet already retweeted from the user we track";
                 return false;
             }

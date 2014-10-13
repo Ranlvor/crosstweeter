@@ -14,7 +14,10 @@
 
 //the id of the user you want to follow
 #define FOLLOW 1234
-#define FOLLOWSTRING "#FOLLOW"
 
+//some helper macros I'm a bit angry at because without them it wouldn't compile
+#define FOLLOWSTRING "#FOLLOW"
+#define INT64HELPER(n) Q_INT64_C(n)
+#define FOLLOWINT64 INT64HELPER(FOLLOW)
 
 #endif // DEVZUGANGSDATEN_H
