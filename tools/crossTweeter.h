@@ -29,6 +29,7 @@ public slots:
     void initSteam();
     void pollStream();
     void streamError(QNetworkReply::NetworkError e);
+    void streamTimeout();
 
 
 private:
@@ -48,6 +49,10 @@ private:
     QSqlQuery queryDelteToRetweet;
     QSqlQuery queryInsertRetweeted;
     qint64 retweeting;
+
+    QTimer streamPollTimeoutTimer;
+
+    static const int streamReadTimeoutMS = 1000 * 60 * 10; //10 Minutes
 };
 
 #endif // CROSSTWEETER_H

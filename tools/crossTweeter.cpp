@@ -40,7 +40,7 @@ void checkMySQLError(QSqlQuery& q) {
 }
 
 crossTweeter::crossTweeter(QObject *parent) :
-    QObject(parent),since_id(0), max_id(0), dirty(0), queryInsertMax(), queryInsertQueue()
+    QObject(parent),since_id(0), max_id(0), dirty(0), queryInsertMax(), queryInsertQueue(), streamPollTimeoutTimer()
 {
 }
 
@@ -355,9 +355,13 @@ void crossTweeter::initSteam(){
     post.chop(1);
 
     streamConnection = streamManager->post(request, post);
-
     connect(streamConnection, SIGNAL(readyRead()), this, SLOT(pollStream()));
     connect(streamConnection, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(streamError(QNetworkReply::NetworkError)));
+
+    connect(&streamPollTimeoutTimer, SIGNAL(timeout()), this, SLOT(streamTimeout()));
+    streamPollTimeoutTimer.setSingleShot(true);
+    streamPollTimeoutTimer.setInterval(streamReadTimeoutMS);
+    streamPollTimeoutTimer.start();
 }
 
 void crossTweeter::pollStream(){
@@ -368,6 +372,9 @@ void crossTweeter::pollStream(){
     if(!streamConnection->canReadLine()){
         qDebug()<<"pollStream(): poll aborted: no line";
     }
+
+    streamPollTimeoutTimer.start(); //resets the timer
+
     bool gotTweet = false;
     while (streamConnection->canReadLine()) {
         QByteArray line = streamConnection->readLine();
@@ -411,7 +418,12 @@ void crossTweeter::pollStream(){
 }
 
 void crossTweeter::streamError(QNetworkReply::NetworkError /*e*/){
-    qFatal((QString("Stream error ")+streamConnection->errorString()).toStdString().c_str());
+    qDebug()<<"Stream error"<<streamConnection->errorString();
+    QCoreApplication::quit();
+}
+
+void crossTweeter::streamTimeout(){
+    qDebug()<<"Stream poll timeout";
     QCoreApplication::quit();
 }
 
