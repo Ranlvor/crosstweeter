@@ -287,7 +287,7 @@ void crossTweeter::pushRequestFinished(QNetworkReply* reply){
     qDebug()<<"data: "<<data;
 
     bool ok;
-    /*QList<QVariant> result = */QtJson::Json::parse(data, ok).toList();
+    QtJson::Json::parse(data, ok).toList();
 
     if(!ok || reply->error()) {
         qFatal("An error occurred during parsing or an error happened, terminating");
@@ -327,8 +327,6 @@ void crossTweeter::initSteam(){
     oauth.setPostParameters(parameters);
 
     QString url = "https://stream.twitter.com/1.1/statuses/filter.json";
-    //url = "https://userstream.twitter.com/1.1/user.json";
-    //url = "http://thyristor.starletp9.de:11111/";
     oauth.setRequestDestination("POST", url);
 
     oauth.sign();
