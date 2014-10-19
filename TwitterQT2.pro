@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui crypto qca network xml sql
+QT       += core crypto qca network sql
 
 TARGET = TwitterQT2
 TEMPLATE = app
@@ -20,8 +20,6 @@ HEADERS  += \
     dev-tokens.h \
     json/json.h \
     tools/crossTweeter.h
-
-FORMS    +=
 
 LIBS += -lqca
 
