@@ -287,12 +287,25 @@ void crossTweeter::pushRequestFinished(QNetworkReply* reply){
     qDebug()<<"data: "<<data;
 
     bool ok;
-    QtJson::Json::parse(data, ok).toList();
+    QVariantMap dataMap = QtJson::Json::parse(data, ok).toMap();
+    bool sucess = false;
 
-    if(!ok || reply->error()) {
-        qFatal("An error occurred during parsing or an error happened, terminating");
+    if(!ok) {
+        sucess = false;
+        qFatal("An error occurred during parsing, terminating");
         QCoreApplication::quit();
+    } else if (reply->error()) {
+        if(dataMap.contains("errors")) {
+            QVariantMap firstError = dataMap["errors"].toList().first().toMap();
+            if(firstError.contains("code") && firstError["code"].toInt() == 327) {
+                qDebug()<<"Detected \"you already retweeted this\"-type error. Treating as sucessfull retweet.";
+                sucess = true;
+            }
+        }
     } else {
+        sucess = true;
+    }
+    if(sucess) {
         qDebug()<<"sucess. Writing to Database";
         QSqlQuery q1("BEGIN");
         checkMySQLError(q1);
@@ -312,6 +325,9 @@ void crossTweeter::pushRequestFinished(QNetworkReply* reply){
         qDebug()<<"Database: done";
 
         doOldestPendingRetweet();
+    } else {
+        qFatal("sucess is false and we are still running. so we had an request with an unknown error. terminating.");
+        QCoreApplication::quit();
     }
 }
 

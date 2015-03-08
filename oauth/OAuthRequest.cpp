@@ -1,6 +1,5 @@
 #include "OAuthRequest.h"
 #include <QCryptographicHash>
-#include "Random.h"
 #include <QUrl>
 #include <QDebug>
 OAuthRequest::OAuthRequest(QString consumerKey, QString consumerSecret, QString tokenKey, QString tokenSecret)
